@@ -2,7 +2,9 @@
 #include<queue>
 #include<stack>
 using namespace std;
-
+//实现一棵二叉树的基本功能
+//输入时存在问题
+//还差一个查询节点个数的功能
 class treenode//一棵树的节点
 {
 public:
