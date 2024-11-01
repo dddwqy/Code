@@ -49,6 +49,7 @@ public:
    // void levelorder();
     void insert_tree();
     void height_total();
+    void num_node_total();
 private:
     void preorder(treenode* curnode)
     {
@@ -65,6 +66,7 @@ private:
     void inorder(treenode* curnode);
     void postorder(treenode* curnode);
     void levelorder(treenode* curnode);
+    int num_node(treenode*curnode);//计算一个节点下的所有节点的个数
     treenode* root;
    // int (Tree::* intvisit)(treenode* node);
     void (*visit)(treenode* root);//一个函数指针，指向一个以指针为输入，返回为void的函数
@@ -239,6 +241,42 @@ int Tree::height(treenode* curnode)
     //cout << h << ' ';
     return h;
 }
+
+void Tree::num_node_total()
+{
+    queue<treenode*> num;
+    num.push(root);
+
+    while(!num.empty())
+    {
+       cout<<num_node(num.front())<<' ';
+      //// num.pop();
+       if(num.front()->left!=nullptr)
+       {
+          num.push(num.front()->left); 
+       }
+       if(num.front()->right!=nullptr)
+       {
+         num.push(num.front()->right);
+       }
+       //num.push();
+       num.pop();
+    }
+    return;
+}
+
+int Tree::num_node(treenode*curnode)
+{
+   if(curnode==nullptr)
+   {
+      return 0;
+   }
+
+   int left_num=num_node(curnode->left);
+   int right_num=num_node(curnode->right);  
+   return left_num+right_num+1;
+} 
+
 void output(treenode* node);
 
 int main()
