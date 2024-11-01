@@ -1,10 +1,9 @@
 #include<iostream>
+#include<vector>
 #include<queue>
 #include<stack>
 using namespace std;
 //实现一棵二叉树的基本功能
-//输入时存在问题
-//还差一个查询节点个数的功能
 class treenode//一棵树的节点
 {
 public:
@@ -38,6 +37,7 @@ public:
         root->num = 1;
         treesize = mtreesize;
         visit = nullptr;
+        insert_use=new treenode*[10000]();
     }
     bool empty() { return treesize == 0; };
     int size() { return treesize; };
@@ -47,7 +47,7 @@ public:
     void postorder(void (*thevisit) (treenode* node));//后序遍历
     void levelorder(void (*thevisit) (treenode* node));//。。层次遍历
    // void levelorder();
-    void insert_tree();
+    void insert_tree(int n);
     void height_total();
     void num_node_total();
 private:
@@ -68,33 +68,34 @@ private:
     void levelorder(treenode* curnode);
     int num_node(treenode*curnode);//计算一个节点下的所有节点的个数
     treenode* root;
+    treenode**insert_use;//使用一个数组来储存节点，每个索引表示该节点的值，因为节点的插入顺序是不固定的，需要去查找节点
    // int (Tree::* intvisit)(treenode* node);
     void (*visit)(treenode* root);//一个函数指针，指向一个以指针为输入，返回为void的函数
     int treesize;
 };
 
-void Tree::insert_tree()//用于填充这一棵树
+void Tree::insert_tree(int n)//用于填充这一棵树
 {
-    queue<treenode*> insert_use;
-    insert_use.push(root);
-    int start = 1;
-    while (start!=treesize)//使用队列来进行节点的插入，因为队列是先进先出的，而我们的节点插入也是按照编号的顺序进行的，也是先进先出
+   
+    insert_use[1]=root;
+    int start=1;
+    for(int i=1;i<=n;i++)
     {
-        int left_num, right_num;
-        cin >> left_num >> right_num;
-        if (left_num != -1)
-        {
-            treenode* new_left = new treenode(left_num, ++start);
-            insert_use.front()->left = new_left;
-            insert_use.push(new_left);
-        }
-        if (right_num != -1)
-        {
-            treenode* new_right = new treenode(right_num, ++start);
-            insert_use.front()->right = new_right;
-            insert_use.push(new_right);
-        }
-        insert_use.pop();
+      int a,b;
+      cin>>a>>b;
+      treenode*x=insert_use[i];
+      
+      if(a!=-1)
+      {
+        x->left=new treenode(a,start++);
+        insert_use[a]=x->left;
+      }
+      if(b!=-1)
+      {
+        x->right=new treenode(b,start++);
+        insert_use[b]=x->right;
+      }
+      x=nullptr;
     }
     return;
 }
@@ -209,22 +210,11 @@ void Tree::levelorder(void (*thevisit) (treenode* node))
 
 void Tree::height_total()
 {
-    queue<treenode*> level;
-    level.push(root);//root先入队
-    while (!level.empty())
-    {
-        cout<<height(level.front())<<' ';
-        if (level.front()->left != nullptr)
-        {
-            level.push(level.front()->left);
-        }
-        if (level.front()->right != nullptr)
-        {
-            level.push(level.front()->right);
-        }
-        level.pop();
-    }
-    cout << endl;
+   for(int i=1;i<=treesize;i++)
+   {
+     cout<<height(insert_use[i])<<' ';
+   }
+   cout<<endl;
     return;
 }
 
@@ -244,24 +234,11 @@ int Tree::height(treenode* curnode)
 
 void Tree::num_node_total()
 {
-    queue<treenode*> num;
-    num.push(root);
-
-    while(!num.empty())
+    for(int i=1;i<=treesize;i++)
     {
-       cout<<num_node(num.front())<<' ';
-      //// num.pop();
-       if(num.front()->left!=nullptr)
-       {
-          num.push(num.front()->left); 
-       }
-       if(num.front()->right!=nullptr)
-       {
-         num.push(num.front()->right);
-       }
-       //num.push();
-       num.pop();
+      cout<<num_node(insert_use[i])<<' ';
     }
+    cout<<endl;
     return;
 }
 
@@ -284,13 +261,13 @@ int main()
     int n;
     cin >> n;
     Tree test(n);
-    test.insert_tree();
+    test.insert_tree(n);
     test.preorder(output);
     test.inorder(output);
     test.postorder(output);
     test.levelorder(output);
+    test.num_node_total();
     test.height_total();
-
     return 0;
 }
 
