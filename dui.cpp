@@ -1,45 +1,67 @@
 #include<iostream>
 using namespace std;
 
-
-int answer[100000]={0};
+int answer[100000];
 int cnt;
 class minheap//小根堆
 {
 public:
-  minheap(int msize=10)
+  minheap(int msize=5002)
   {
     arraylength=msize;
     heapsize=0;
     heap=new int[arraylength+1]();//从第一个位置开始
   }
-  ~minheap(){delete [] minheap;}
+  ~minheap(){delete [] heap;}
   bool empty(){return heapsize==0;}
   int size(){return heapsize;}
   int top()
   {
     if(heapsize==0)
     {
-       return queueEmpty();
+       cout<<"堆为空"<<endl;
     }
     return heap[1];
   }
+  //int getheapsize(){return heapsize;};
   void pop();
+  void sort(minheap*temp);
   void push(int temp);
-  void initialize();//初始化函数
-  int operation(int i)
+  void initialize(int*new_array,int size);//初始化函数
+  void output();
+  void operation(int i)
   {
       if(i==1)
       {
         int temp;
-        cin>>temp
+        cin>>temp;
          //initialize();
         push(temp);
-        answer[cnt++]=heap[1];
+        answer[cnt]=heap[1];
+        cnt++;
       }else if(i==2)
       {
         pop();
-        answer[cnt++]=heap[1];
+        answer[cnt]=heap[1];
+        cnt++;
+      }else if(i==3)
+      {
+        int n;
+        cin>>n;
+        minheap*temp=new minheap(6000);
+        int* new_array=new int[6000+1]();    
+        for(int i=1;i<=n;i++)
+        {
+          cin>>new_array[i];
+        }
+        temp->initialize(new_array,n);
+       // temp->output();
+        sort(temp);
+        for(int i=0;i<cnt;i++)
+        {
+           cout<<answer[i]<<endl;
+        }
+        temp->output();
       }
   }
 private:
@@ -49,20 +71,22 @@ private:
   int*heap;
 };
 
-void initialize()
+void minheap::initialize(int*new_array,int size)
 {
-    for(int i=1;i<=heapsize;i++)
-    {
-       cin>>heap[i];
-    }
-
+    delete [] heap;
+    heap=new_array;
+    new_array=nullptr;
+    heapsize=size;
+    //cout<<"enter end"<<endl;
     for(int i=heapsize/2;i>=1;i--)
     {
+        //cout<<"enter for()"<<endl;
         int element=heap[i];
         int child=i*2;
 
         while(child<=heapsize)
         {
+            //cout<<"enter while()"<<endl;
            if(child<heapsize&&heap[child+1]<heap[child])
            {
               child++;
@@ -75,16 +99,17 @@ void initialize()
            child*=2;
         }
         heap[child/2]=element;
+        //cout<<"end while()"<<endl;
     }
-
+    //cout<<"end for()"<<endl;
     return;
 }
 
-void pop()
+void minheap::pop()
 {
     if(heapsize==0)
     {
-      return queueEmpty();
+      cout<<"堆为空"<<endl;
     }
 
     int lastelement=heap[heapsize--];
@@ -109,7 +134,7 @@ void pop()
     return;
 }
 
-void push(int temp)
+void minheap::push(int temp)
 {
     if(heapsize==arraylength-1)
     {
@@ -122,13 +147,13 @@ void push(int temp)
       heap[currentnode]=heap[currentnode/2];
       currentnode=currentnode/2;
     }
-    heap[current]=temp;
+    heap[currentnode]=temp;
     return;
 }
 
-void changelength()
+void minheap::changelength()
 {
-    int new_array=new int[arraylength*2]();
+    int*new_array=new int[arraylength*2]();
     for(int i=1;i<=arraylength;i++)
     {
       new_array[i]=heap[i];
@@ -136,24 +161,54 @@ void changelength()
     delete [] heap;
     heap=new_array;
     new_array=nullptr;
-    arraylenth*=2;
+    arraylength*=2;
     return;
+}
+void minheap::output()
+{ 
+    for(int i=heapsize;i>=1;i--)
+    {
+       cout<<heap[i]<<' ';
+    }
+    cout<<endl;
+    return;
+}
+
+void minheap::sort(minheap*temp)
+{
+   int temp_heapsize=temp->heapsize;
+   for(int i=temp->size()-1;i>=1;i--)
+   {
+     int x=temp->top();
+     temp->pop();
+     temp->heap[i+1]=x;
+   }
+   temp->heapsize=temp_heapsize;
+   //temp->output();
+   return;
 }
 
 int main()
 {
     int n,m;
+    //cin>>n;
+    minheap test(6000);
     cin>>n;
-    minheap test(n);
-    test.initialize();
+    int* new_array=new int[6000+1]();    
+    for(int i=1;i<=n;i++)
+    {
+        cin>>new_array[i];
+    }
+    test.initialize(new_array,n);
+    answer[cnt]=test.top();
+    cnt++;
+
     cin>>m;
+    int op;
     for(int i=1;i<=m;i++)
     {
-       int op;
        cin>>op;
        test.operation(op);
     }
-
-
     return 0;
 }
